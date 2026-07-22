@@ -1,0 +1,564 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>The Compass — Sand Technologies</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700;800;900&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --coral:#f54343; --squash:#f1ae0a; --cadet:#80a2b4;
+  --radius:4px;
+  --font-sans:'Inter Tight',system-ui,-apple-system,sans-serif;
+  --font-mono:'IBM Plex Mono',ui-monospace,Menlo,monospace;
+}
+html[data-theme="light"]{
+  --bg:#f3f2ed; --panel:#fbfbf8; --surface:#ffffff; --surface-2:#f0efe9; --border:#e2e1d9; --border-2:#cbcabf;
+  --text:#0d0d0d; --muted:#5c5b54; --faint:#9a988e; --ink:#0d0d0d;
+}
+html[data-theme="dark"]{
+  --bg:#0a0a0a; --panel:#0f0f0f; --surface:#151515; --surface-2:#1b1b1b; --border:#272727; --border-2:#3a3a3a;
+  --text:#f4f3ef; --muted:#9a9a94; --faint:#66655f; --ink:#f4f3ef;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font-sans);line-height:1.55;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+h1,h2,h3,h4{margin:0;font-weight:800;letter-spacing:-.03em;line-height:1.05}
+.mono{font-family:var(--font-mono)}
+.ink-coral{color:var(--coral)} .ink-cadet{color:var(--cadet)} .ink-squash{color:var(--squash)}
+
+/* ===== login ===== */
+#login{position:fixed;inset:0;background:var(--bg);display:grid;place-items:center;padding:24px;z-index:60}
+#login .card{max-width:520px;width:100%;text-align:center}
+#login .eyebrow{font-family:var(--font-mono);font-size:.78rem;letter-spacing:.24em;text-transform:uppercase;color:var(--squash);display:block;margin-bottom:14px;font-weight:600}
+#login h1{font-size:3.4rem;font-weight:900;letter-spacing:-.04em}
+#login p{color:var(--muted);margin:16px auto 30px;max-width:44ch}
+.gbtn{display:flex;align-items:center;justify-content:center;gap:12px;width:100%;padding:15px;border:1px solid var(--border-2);border-radius:var(--radius);background:var(--surface);font:inherit;font-weight:600;color:var(--text);cursor:pointer}
+.gbtn:hover{border-color:var(--cadet)}
+#login .fine{font-family:var(--font-mono);font-size:.72rem;color:var(--faint);margin-top:22px;letter-spacing:.04em}
+#login .mk{margin-bottom:8px;font-family:var(--font-mono);font-size:.7rem;letter-spacing:.2em;color:var(--faint)}
+
+/* ===== shell ===== */
+.shell{display:grid;grid-template-columns:270px 1fr;min-height:100vh}
+.sidebar{background:var(--panel);border-right:1px solid var(--border);position:sticky;top:0;height:100vh;overflow-y:auto;display:flex;flex-direction:column;padding:24px 16px 0}
+.side-brand{display:flex;align-items:center;gap:10px;padding:4px 10px 24px;font-weight:800;font-size:1.1rem;letter-spacing:-.02em}
+.side-brand svg{flex:none}
+.nav-item{display:flex;align-items:flex-start;gap:11px;padding:11px 10px;border-radius:var(--radius);color:var(--muted);cursor:pointer;border-left:2px solid transparent}
+.nav-item:hover{background:var(--surface-2);color:var(--text)}
+.nav-item.active{background:var(--surface-2);color:var(--text);border-left:2px solid var(--cadet)}
+.nav-item .num{font-family:var(--font-mono);font-size:.7rem;color:var(--faint);margin-top:2px}
+.nav-item.active .num{color:var(--cadet)}
+.ni-l{font-size:.95rem;font-weight:600;line-height:1.2}
+.ni-s{font-family:var(--font-mono);font-size:.58rem;letter-spacing:.02em;color:var(--faint);margin-top:3px;display:block}
+.side-foot{margin-top:auto;border-top:1px solid var(--border);padding:14px 10px;display:flex;align-items:center;gap:10px}
+.avatar{width:30px;height:30px;border-radius:50%;background:var(--surface-2);border:1px solid var(--border-2);display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;color:var(--cadet)}
+.side-foot .k{font-family:var(--font-mono);font-size:.56rem;letter-spacing:.14em;text-transform:uppercase;color:var(--faint)}
+.side-foot .n{font-size:.86rem;font-weight:600}
+.confid{font-family:var(--font-mono);font-size:.56rem;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);padding:10px}
+.main{display:flex;flex-direction:column;min-width:0}
+.tbar{display:flex;justify-content:flex-end;padding:14px 40px 0}
+.iconbtn{background:none;border:1px solid var(--border);border-radius:50%;width:34px;height:34px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text)}
+.content{padding:26px 56px 0;max-width:1240px;width:100%}
+
+/* ===== editorial hero (deck style) ===== */
+.phead{display:flex;justify-content:space-between;align-items:center;font-family:var(--font-mono);font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;padding-bottom:clamp(40px,9vh,110px);gap:16px}
+.phead .l{display:flex;align-items:center;gap:12px;font-weight:600}
+.phead .arw{font-size:1rem}
+.phead .pright{color:var(--muted);font-weight:500}
+.phero{padding-bottom:8px}
+.peyebrow{font-family:var(--font-mono);color:var(--squash);font-size:.84rem;letter-spacing:.22em;text-transform:uppercase;font-weight:700}
+.pdisplay{font-size:clamp(2.8rem,7.5vw,6rem);font-weight:800;letter-spacing:-.045em;line-height:.94;margin:22px 0 34px;max-width:15ch}
+.pfoot{display:flex;justify-content:space-between;gap:48px;flex-wrap:wrap;align-items:flex-end;border-top:1px solid var(--border);padding-top:22px}
+.psub{font-size:1.25rem;max-width:30ch;margin:0;font-weight:500}
+.pdesc{color:var(--muted);max-width:36ch;margin:0;font-size:.95rem}
+
+/* ===== sections ===== */
+.section{padding:44px 0;border-top:1px solid var(--border)}
+.slabel{font-family:var(--font-mono);font-size:.74rem;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);font-weight:700;margin-bottom:20px}
+.lead{font-size:1.12rem;color:var(--muted);max-width:64ch}
+.lead b{color:var(--text);font-weight:600}
+.prose{max-width:66ch}.prose p{color:var(--muted)}
+.hl{box-shadow:inset 0 -.5em 0 rgba(241,174,10,.35)}
+.hl-c{box-shadow:inset 0 -.5em 0 rgba(128,162,180,.35)}
+
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.cards.two{grid-template-columns:repeat(2,1fr)}
+.card{border:1px solid var(--border);background:var(--surface);border-radius:var(--radius);padding:24px;position:relative}
+.card.click{cursor:pointer}.card.click:hover{border-color:var(--cadet)}
+.card .n{font-family:var(--font-mono);font-size:.68rem;letter-spacing:.1em;color:var(--faint)}
+.card .cic{width:36px;height:36px;border-radius:8px;background:var(--surface-2);border:1px solid var(--border);color:var(--cadet);display:flex;align-items:center;justify-content:center;margin-bottom:14px}
+.card h3{font-size:1.15rem;margin:10px 0 6px}
+.card p{color:var(--muted);font-size:.9rem;margin:0}
+.card .arw{position:absolute;right:16px;bottom:14px;color:var(--faint)}
+
+/* buddy callout */
+.buddy{border:1px solid var(--border);border-left:3px solid var(--squash);background:var(--surface);border-radius:var(--radius);padding:26px 28px}
+.buddy h3{font-size:1.3rem;margin-bottom:8px}
+.buddy p{color:var(--muted);margin:0;max-width:60ch}
+
+/* checklist */
+.check{display:flex;align-items:flex-start;gap:12px;padding:14px 16px;border:1px solid var(--border);border-radius:var(--radius);background:var(--surface);font-size:.95rem;font-weight:500;color:var(--text);cursor:pointer;margin-bottom:8px}
+.check input{margin-top:3px;accent-color:var(--cadet);flex:none;width:16px;height:16px}
+.check:has(input:checked){color:var(--faint);text-decoration:line-through}
+.syslogo{width:34px;height:34px;border-radius:8px;border:1px solid var(--border);background:#fff;display:flex;align-items:center;justify-content:center;flex:none;overflow:hidden}
+.syslogo img{width:20px;height:20px;object-fit:contain}
+.syslogo .fb{font-weight:800;font-size:.9rem;color:var(--cadet);display:none}
+.sicon{width:34px;height:34px;border-radius:8px;background:var(--surface-2);border:1px solid var(--border);color:var(--cadet);display:flex;align-items:center;justify-content:center;flex:none}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+
+/* link rows */
+.linkrow{display:flex;align-items:center;gap:12px;padding:13px 16px;border:1px solid var(--border);border-radius:var(--radius);background:var(--surface);margin-bottom:8px;cursor:pointer}
+.linkrow:hover{border-color:var(--cadet)}
+.linkrow .lt{font-weight:600;font-size:.92rem}.linkrow .ls{color:var(--muted);font-size:.8rem}
+.linkrow .ar{margin-left:auto;color:var(--faint)}
+
+/* principles list */
+.plist{display:grid;grid-template-columns:1fr 1fr;gap:0 40px}
+.prow{display:flex;gap:14px;padding:16px 0;border-top:1px solid var(--border);cursor:pointer}
+.prow:hover .pn{color:var(--squash)}
+.prow .idx{font-family:var(--font-mono);font-size:.75rem;color:var(--coral);font-weight:600}
+.pn{font-weight:700;font-size:1rem}
+.pd{color:var(--muted);font-size:.85rem;margin-top:2px}
+
+/* ladder */
+.ladder{display:flex;flex-direction:column;gap:8px}
+.lstep{display:flex;align-items:center;gap:18px}
+.lstep .box{background:var(--ink);color:var(--bg);font-weight:700;padding:14px 20px;border-radius:var(--radius);min-width:230px}
+.lstep .desc{color:var(--muted);font-size:.92rem}
+
+/* quiz */
+.quiz{border:1px solid var(--border);background:var(--surface);border-radius:var(--radius);padding:24px;margin-bottom:14px}
+.quiz .q{font-size:1.15rem;font-weight:700;margin:4px 0 16px;max-width:52ch}
+.quiz .qn{font-family:var(--font-mono);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--faint)}
+.opt{display:flex;gap:12px;padding:13px 16px;border:1px solid var(--border);border-radius:var(--radius);background:var(--panel);margin-bottom:8px;cursor:pointer;font-size:.92rem}
+.opt:hover{border-color:var(--border-2)}
+.opt .ol{font-weight:700;color:var(--faint)}
+.opt.correct{background:var(--squash);border-color:var(--squash);color:#0d0d0d}
+.opt.correct .ol{color:#0d0d0d}
+.opt.wrong{border-color:var(--coral);opacity:.7}
+.qexp{font-size:.88rem;color:var(--muted);margin-top:10px;display:none}
+.qexp.show{display:block}
+
+.rex{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.socials{display:flex;gap:10px}
+.socials a{width:34px;height:34px;border:1px solid var(--border);border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--muted)}
+.socials a:hover{color:var(--text);border-color:var(--cadet)}
+.foot{border-top:1px solid var(--border);padding:26px 56px;display:flex;align-items:center;gap:18px;flex-wrap:wrap;margin-top:20px}
+.foot-tag{font-family:var(--font-mono);font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--faint)}
+.foot-meta{font-family:var(--font-mono);font-size:.62rem;color:var(--faint);width:100%}
+.cta{display:inline-flex;align-items:center;gap:9px;background:var(--cadet);color:#08110f;font-weight:600;padding:12px 20px;border-radius:var(--radius);border:none;cursor:pointer;font:inherit;font-weight:600}
+.rec{display:flex;gap:16px;padding:18px;border:1px solid var(--border);border-radius:var(--radius);background:var(--surface);margin-bottom:10px}
+.rec .date{font-family:var(--font-mono);font-size:.68rem;text-transform:uppercase;color:var(--faint)}
+.rec h3{font-size:1rem;margin:5px 0 6px}.rec .meta{font-size:.86rem;color:var(--muted);margin:2px 0}
+.rec .watch{margin-left:auto;align-self:flex-start;border:1px solid var(--cadet);color:var(--cadet);border-radius:var(--radius);padding:8px 14px;font-size:.82rem;font-weight:600;cursor:pointer;white-space:nowrap}
+.signup{border:1px solid var(--border);border-left:3px solid var(--squash);background:var(--surface);border-radius:var(--radius);padding:20px;margin-bottom:20px}
+.signup h3{font-size:1.05rem;margin-bottom:6px}.signup p{color:var(--muted);font-size:.9rem;margin:0 0 14px}
+.signup form{display:flex;gap:8px;flex-wrap:wrap}
+.signup input{flex:1;min-width:220px;padding:12px 14px;border:1px solid var(--border-2);border-radius:var(--radius);background:var(--surface-2);color:var(--text);font:inherit}
+.nextbar{margin:48px -56px 0;padding:38px 56px;background:var(--panel);border-top:1px solid var(--border);cursor:pointer;display:flex;flex-direction:column;gap:6px}
+.nextbar:hover{background:var(--surface-2)}
+.nextbar .nl{font-family:var(--font-mono);font-size:.7rem;letter-spacing:.16em;text-transform:uppercase;color:var(--faint)}
+.nextbar .nt{font-size:1.8rem;font-weight:800;letter-spacing:-.03em}
+.quote{border-left:2px solid var(--cadet);padding:4px 0 4px 20px;margin:0 0 18px}
+.quote p{font-size:1.15rem;font-weight:500;margin:0 0 6px}
+.quote .by{font-family:var(--font-mono);font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;color:var(--faint)}
+.pgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:0 44px}
+.pitem{border-top:1px solid var(--border);padding:22px 0}
+.pi-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.pitem .idx{font-family:var(--font-mono);color:var(--coral);font-weight:600;font-size:.8rem}
+.pi-theme{font-family:var(--font-mono);font-size:.6rem;letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}
+.pi-name{font-size:1.25rem;margin-bottom:8px}
+.pi-desc{color:var(--muted);font-size:.92rem;margin:0}
+.follow{text-align:center}
+.follow-h{font-size:1.9rem;text-align:center;margin-bottom:6px}
+.socials.big{justify-content:center;gap:14px}
+.socials.big a{width:52px;height:52px}
+.vid{border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;background:#000}
+.vid iframe{width:100%;aspect-ratio:16/9;display:block;border:0}
+.reveal{opacity:0;transform:translateY(18px);transition:opacity .6s ease,transform .6s ease}
+.reveal.in{opacity:1;transform:none}
+@media(prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none}}
+@media(max-width:960px){.shell{grid-template-columns:1fr}.sidebar{display:none}.cards,.cards.two,.rex,.plist,.pgrid{grid-template-columns:1fr}.grid2{grid-template-columns:1fr}.content{padding:20px 22px 0}.pfoot{gap:20px}.nextbar{margin:36px -22px 0;padding:28px 22px}.foot{padding:22px}}
+</style>
+</head>
+<body>
+
+<div id="login">
+  <div class="card">
+    <span class="eyebrow">Welcome, Adventurer</span>
+    <h1>The Compass</h1>
+    <p>Sign in with your work Google account to explore your onboarding journey and the culture that makes Sand, Sand.</p>
+    <button class="gbtn" onclick="enterSite()"><span id="gicon"></span> Sign in with Google</button>
+    <p class="fine">Access limited to Sand Technologies accounts · Prototype — no real auth</p>
+  </div>
+</div>
+
+<div class="shell" id="app" style="display:none">
+  <aside class="sidebar">
+    <div class="side-brand"><svg width="20" height="20" viewBox="0 0 24 24"><path d="M12 3L21 20H3z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg> The Compass</div>
+    <div id="nav"></div>
+    <div class="side-foot"><div class="avatar">P</div><div><div class="k">Signed in as</div><div class="n">Pschutte</div></div></div>
+    <div class="confid">The Compass · Sand internal</div>
+  </aside>
+  <div class="main">
+    <div class="tbar"><button class="iconbtn" id="themeBtn" onclick="toggleTheme()" title="Theme"></button></div>
+    <div class="content" id="view"></div>
+    <footer class="foot">
+      <span class="foot-tag">Critical Systems. Intelligent Outcomes.</span>
+      <div class="socials" id="footSocial" style="margin-left:auto"></div>
+      <span class="foot-meta">© 2026 Sand Technologies · The Compass · Sand internal</span>
+    </footer>
+  </div>
+</div>
+
+<script>
+const I=(p,s=20)=>`<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">${p}</svg>`;
+const icons={
+  home:'<path d="M3 11l9-8 9 8M5 10v10h14V10"/>',
+  route:'<circle cx="6" cy="19" r="2"/><circle cx="18" cy="5" r="2"/><path d="M8 19h6a4 4 0 0 0 0-8H8a4 4 0 0 1 0-8h4"/>',
+  book:'<path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2zM19 3v16"/>',
+  culture:'<path d="M12 3l1.8 4.2L18 9l-4.2 1.8L12 15l-1.8-4.2L6 9z"/>',
+  arrow:'<path d="M5 12h14M13 6l6 6-6 6"/>',
+  external:'<path d="M14 4h6v6M20 4l-8 8M18 13v5a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/>',
+  mail:'<rect x="3" y="5" width="18" height="14" rx="1"/><path d="M3 7l9 6 9-6"/>',
+  video:'<rect x="3" y="6" width="13" height="12" rx="1"/><path d="M16 10l5-3v10l-5-3z"/>',
+  sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4 12H2M22 12h-2M5 5l1.5 1.5M17.5 17.5L19 19M19 5l-1.5 1.5M6.5 17.5L5 19"/>',
+  moon:'<path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/>',
+  linkedin:'<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 10.5v6M7 7.2v.01M11.5 16.5v-3.5a1.8 1.8 0 0 1 3.6 0v3.5M11.5 10.5v6"/>',
+  x:'<path d="M5 5l14 14M19 5 5 19"/>',
+  youtube:'<rect x="3" y="6" width="18" height="12" rx="3"/><path d="M10.5 9.4l4.2 2.6-4.2 2.6z"/>',
+  instagram:'<rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="0.9" fill="currentColor" stroke="none"/>',
+  play:'<circle cx="12" cy="12" r="10"/><path d="M10 8l6 4-6 4z" fill="currentColor" stroke="none"/>',
+  users:'<circle cx="9" cy="8" r="3"/><path d="M3 20a6 6 0 0 1 12 0M16 6a3 3 0 0 1 0 6M21 20a6 6 0 0 0-4-5.6"/>',
+  compass:'<circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/>',
+  calendar:'<rect x="3" y="5" width="18" height="16" rx="1"/><path d="M3 9h18M8 3v4M16 3v4"/>',
+  doc:'<path d="M6 2h9l3 3v17H6z"/><path d="M15 2v4h4M9 13h6M9 17h5"/>',
+  rocket:'<path d="M5 15c-1 1-1 4-1 4s3 0 4-1M9 11a10 10 0 0 1 8-6c1 5-1 8-6 8M9 11l4 4M9 11l-3 1M13 15l-1 3"/>',
+  gauge:'<path d="M4 14a8 8 0 1 1 16 0M12 14l4-5"/><circle cx="12" cy="14" r="1.4" fill="currentColor" stroke="none"/>',
+  key:'<circle cx="8" cy="14" r="4"/><path d="M11 11L20 3M16 6l2.5 2.5M13.5 8.5L16 11"/>',
+  chat:'<path d="M4 5h16v11H9l-5 4z"/><path d="M8 9h8M8 12h5"/>',
+  network:'<circle cx="12" cy="5" r="2"/><circle cx="5" cy="17" r="2"/><circle cx="19" cy="17" r="2"/><path d="M11 7l-5 8M13 7l5 8M7 17h10"/>',
+  flag:'<path d="M6 21V4M6 4h11l-2.5 3.5L17 11H6"/>',
+  heart:'<path d="M12 20s-7-4.6-9-9a5 5 0 0 1 9-3 5 5 0 0 1 9 3c-2 4.4-9 9-9 9z"/>',
+  target:'<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r="1" fill="currentColor" stroke="none"/>',
+  eye:'<path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6-10-6-10-6z"/><circle cx="12" cy="12" r="2.5"/>',
+  droplet:'<path d="M12 3s6 6.5 6 11a6 6 0 0 1-12 0c0-4.5 6-11 6-11z"/>',
+  bolt:'<path d="M13 2L5 13h6l-1 9 8-11h-6z"/>',
+  wifi:'<path d="M2 9a15 15 0 0 1 20 0M5.5 12.5a10 10 0 0 1 13 0M9 16a5 5 0 0 1 6 0"/><circle cx="12" cy="19" r="1.2" fill="currentColor" stroke="none"/>',
+  factory:'<path d="M3 21V9l6 4V9l6 4V4h6v17z"/>',
+  hand:'<path d="M7 11V6a1.5 1.5 0 0 1 3 0v4M10 10V4.5a1.5 1.5 0 0 1 3 0V10M13 10V6a1.5 1.5 0 0 1 3 0v6.5a6 6 0 0 1-6 6c-3 0-4.5-1.5-6-4l-1.6-3a1.4 1.4 0 0 1 2.4-1.4L7 12"/>',
+  scale:'<path d="M12 3v18M5 7l7-2 7 2M5 7l-2.5 6a3.5 3.5 0 0 0 7 0zM19 7l-2.5 6a3.5 3.5 0 0 0 7 0z" transform="scale(0.85) translate(2 1)"/>',
+  smile:'<circle cx="12" cy="12" r="9"/><path d="M8.5 14a4.5 4.5 0 0 0 7 0M9 9.5h.01M15 9.5h.01"/>',
+  megaphone:'<path d="M3 10v4M7 9v6l10 4V5zM17 8a4 4 0 0 1 0 8"/>',
+  camera:'<rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7l1.5-3h5L16 7"/><circle cx="12" cy="13" r="3.5"/>',
+  download:'<path d="M12 3v11M7 10l5 5 5-5M4 19h16"/>'
+};
+const googleG=`<svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9 3.6l6.7-6.7C35.6 2.6 30.2 0 24 0 14.6 0 6.4 5.4 2.5 13.2l7.9 6.1C12.2 13.3 17.6 9.5 24 9.5z"/><path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.7c-.5 3-2.2 5.5-4.7 7.2l7.3 5.7c4.3-4 6.9-9.9 6.9-17.4z"/><path fill="#FBBC05" d="M10.4 28.3c-.5-1.4-.8-2.9-.8-4.3s.3-3 .8-4.3l-7.9-6.1C.9 16.8 0 20.3 0 24s.9 7.2 2.5 10.4z"/><path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.3-5.7c-2 1.4-4.6 2.2-8.6 2.2-6.4 0-11.8-3.8-13.6-9.8l-7.9 6.1C6.4 42.6 14.6 48 24 48z"/></svg>`;
+
+/* ---------- data ---------- */
+const NAV=[
+  {id:'home',n:'01',label:'Welcome',sub:'Start here'},
+  {id:'journey',n:'02',label:'Your Journey',sub:'Onboarding & first 90 days'},
+  {id:'story',n:'03',label:'Our Story',sub:'Who we are & why we exist'},
+  {id:'principles',n:'04',label:'Our Principles',sub:'How we lead & how we work'},
+  {id:'share',n:'05',label:'Spread the Word',sub:'Share the news & grab the kit'}
+];
+const PILLARS=[
+  ['Choose growth','Stay curious; keep learning and improving.','Strive to be better. Don\'t stop learning. Continuously improve. Remain humble and curious. Don\'t be that "know it all".','Learning & curiosity'],
+  ['Decide','Take initiative. Don\'t wait for permission.','When you see a client\'s problem, solve it. Make the call and keep things moving. Don\'t wait for permission; beg for forgiveness later. Most decisions are reversible.','Radical empowerment'],
+  ['Get Stuff Done (G.S.D)','Execution over perfection; move fast, adapt.','Move quickly. Shoot to score. An average plan executed well beats a perfect plan never executed. Prioritise speed over perfection.','Bias to action'],
+  ['K.I.S.S','Cut process. Simplicity and common sense.','Cut the BS. No red tape. Cut as much as you add. Keep processes simple. Use common sense, not the rule book.','Minimise bureaucracy'],
+  ['Surf like Yvon','Integrity and transparency over short-term wins.','Act with integrity and transparency. Do work your grandkids will be proud of. Be fair, respectful, and use good judgment.','Ethical entrepreneurs'],
+  ['Our Clients Run the Company','Serve clients obsessively; delight them.','Our clients run the show. Period. Serve them obsessively. Don\'t waste energy on politics. Everything you do should delight our clients.','Client focus'],
+  ['Play The Long Game','Build lasting relationships on trust and care.','Build genuine, caring relationships. Earn trust. Don\'t maximise short-term profit at the expense of long-term relationships.','Relationships, not transactions'],
+  ['Do Hard Things','Tackle meaningful problems. Push boundaries.','Make history. Think big. Choose hard, important problems. Don\'t play it safe. Aim for the stars. Leave your mark.','Solve problems that matter'],
+  ['Everybody Is Welcome','Inclusive teams; respect every dimension of diversity.','Appreciate and respect everybody. Build diverse teams to serve our diverse clients. Give everyone a fair shot.','Diversity'],
+  ['Each One, Teach Ten','Mentor and share knowledge generously.','Share your knowledge. Mentor and teach the next generation. Invest in their futures. Give, expecting nothing in return.','Teach others'],
+  ['Raise The Bar','Exceptional work; set new standards.','Strive for excellence. Let your last deliverable be your best. Make clients raving fans. Set the standard. Show, don\'t tell.','Delivery excellence'],
+  ['There Is No Failure','Setbacks are learning. Aim high, take risks.','Take bold risks. Set ambitious plans. There is no failure, only learning. Better to fall short at something extraordinary than achieve something ordinary.','There is no failure'],
+  ['Pioneer','Be bold. Experiment at the cutting edge.','Work at the cutting edge. Stand out with bold innovation. Set a culture of experimentation. Celebrate science and engineering.','Scientific pioneers']
+];
+const WHY=[['Alignment','Everyone rowing the same way.','compass'],['Speed','Move without waiting for permission.','gauge'],['Autonomy','Decide close to the work.','key'],['Shared language','A common way to reason together.','chat'],['Decentralised leadership','Everyone leads, everywhere.','network'],['Enduring greatness','Build something that lasts.','flag']];
+const MINDSET=[['Ownership','You\'re responsible for outcomes, not just tasks.','key'],['Accountability','Commitments matter. Progress is visible.','eye'],['Customer focus','Our work exists to create real-world impact.','heart'],['Bias toward action','We move quickly, learn quickly, improve.','bolt'],['Alignment & transparency','We operate openly so teams can plan.','scale']];
+const LADDER=[['Strategy','Defines where we\'re going and why it matters.'],['Goals (OKRs)','Translate strategy into clear priorities.'],['Cadence & systems','Create alignment, visibility and momentum.'],['Individual ownership','You take responsibility for outcomes.'],['Customer outcomes','Real-world outcomes for the customers we serve.']];
+const RHYTHMS=[['Daily — The Pulse','Short check-ins; distributed decisions.'],['Weekly — The Flow','Align and share progress.'],['Bi-weekly — TLD','Org-wide all-hands.'],['Monthly — Connect','1:1s, coaching and feedback.'],['Trimesterly — Big Picture','Planning and retrospectives.'],['Annually — Renewal','Reviews and strategy refresh.']];
+const SYSTEMS=[
+ ['Google Workspace','Your email, docs, Drive and Calendar — where everyday work lives.','itops@sandtech.com','google.com'],
+ ['Slack','Team chat and channels — where conversations happen.','itops@sandtech.com','slack.com'],
+ ['Zoom','Meetings, webinars and TLD — where we meet.','itops@sandtech.com','zoom.us'],
+ ['HiBob','HR home: your profile, leave requests and company policies.','peopleops@sandtech.com','hibob.com'],
+ ['Lattice','Goals, feedback, 1:1s and performance reviews.','peopleexp@sandtech.com','lattice.com'],
+ ['Strove','Wellness: fitness challenges, mental health support, nutrition.','peopleexp@sandtech.com','strove.co'],
+ ['Greenhouse','Recruitment: refer people, track roles, give interview feedback.','hiring@sandtech.com','greenhouse.io'],
+ ['TravelPerk','Book and manage work travel, policy-compliant by default.','peopleops@sandtech.com','travelperk.com']];
+const sysLogo=d=>`<span class="syslogo"><img src="https://www.google.com/s2/favicons?domain=${d}&sz=64" alt="" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span class="fb">${d[0].toUpperCase()}</span></span>`;
+const POLICIES=[['Leave','Vacation, sick, time off'],['Payroll','Pay cycles & payslips'],['Travel','Booking & reimbursements'],['Contracts','Employment & amendments']];
+const PREREADS=[['A Letter from Milan to the Cathedral — Bill Shore','Build for generations, not quarters'],['Kodak Case Study','Innovate before the curve turns']];
+const CHECKLIST=[
+  {g:'Before you start',items:['Get access to key systems.','Learn about Sand\'s origins, impact and culture.','Skim the essential reads.','Meet our 13 Leadership Principles.']},
+  {g:'First two weeks',items:['Meet your manager, team and key people.','Get introduced to systems, policies and processes.','Attend your first TLD.','Set up your 1:1s.']},
+  {g:'First sprint (3 months)',items:['Apply your learning; gain confidence.','Deepen your connections.','Own a first scoped piece of work.','Meet more of Sand through the Live Experience.']}
+];
+const REX=[['30 days','Settling in',"A friendly check-in from the Talent Experience team: how has your start felt, is your setup and access sorted, and where do you still need a hand? Bring the small frustrations — that's exactly what it's for."],['60 days','Finding your rhythm',"A relaxed chat about fit and support: is the role what you expected, do you have what you need, and are you connecting with your team? We'll help unblock anything in the way."],['90 days','Hitting your stride',"We step back together at the end of your first quarter — what you've learned, what's landed well, and what to focus on next — plus your honest take on how onboarding could have been better."]];
+const AREAS=[['Healthcare','More patients treated, faster care.','heart'],['Water & Sustainability','Save water with predictive control.','droplet'],['Industrial Efficiency','Lower maintenance costs at scale.','factory'],['Connectivity','Keep people connected, everywhere.','wifi']];
+const TLD={date:'2026-01-29',title:'Strove Partner Presentation',topic:'Strove + OKR Update'};
+const WEEKLYT={date:'2026-01-30',title:'The Weekly T — 30 Jan 2026',subject:'What shipped, who to celebrate, what\'s next.'};
+const CEO={date:'2026-01-31',title:'A note from Fred',subject:'Dominate Africa. Launch US. Transform ways of working.'};
+const SOCIALS=[['Instagram','instagram','https://www.instagram.com/sandtechinc/'],['LinkedIn','linkedin','https://www.linkedin.com/company/sandtechinc/'],['X','x','https://x.com/SandTechInc'],['YouTube','youtube','https://www.youtube.com/@SandTechInc']];
+const BLOG=[['The problem we solved at Thames Water','Technical blog','How the team cut leakage with hydraulic models.'],['Field notes: Health OS across 15 countries','Impact story','What we learned deploying at scale.'],['Why we play the long game','Culture','A perspective from an Adventurer in the field.']];
+const QUIZ=[
+  ['A key client keeps changing requirements mid-project. Your team wants to push back firmly — but this relationship could define your work in the region for years.',['K.I.S.S','Get Stuff Done','Play the Long Game','Raise the Bar'],2,'Protect the long-term relationship over a short-term win.'],
+  ['Your team has researched a problem for weeks. You have two viable options — one safe, one bold. Neither is perfect, and more analysis won\'t change that.',['Decide','Surf like Yvon','Do Hard Things','There is No Failure'],0,'Make the call and keep moving — most decisions are reversible.'],
+  ['You\'re onboarding onto a project and the domain is far outside your comfort zone. You\'re tempted to stick to what you know.',['Our Clients Run the Company','Each One, Teach Ten','Pioneer','Choose Growth'],3,'Lean into learning — stay curious and grow.'],
+  ['No existing tool or process solves your client\'s problem. You have an untested idea that means building from scratch.',['Play the Long Game','Pioneer','Get Stuff Done','There Is No Failure'],1,'Experiment at the cutting edge — that\'s pioneering.']
+];
+
+/* ---------- helpers ---------- */
+const el=id=>document.getElementById(id);
+const view=()=>el('view');
+const fmt=d=>{const x=new Date(d);return isNaN(x)?d:x.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'}).toUpperCase();};
+const socialRow=(sz=18)=>SOCIALS.map(s=>`<a href="${s[2]}" target="_blank" rel="noopener" title="${s[0]}">${I(icons[s[1]],sz)}</a>`).join('');
+function videoEmbed(id,title){return `<div class="vid"><iframe src="https://www.youtube.com/embed/${id}" title="${title}" allow="encrypted-media;picture-in-picture" allowfullscreen></iframe></div>`;}
+function followBlock(){return `<div class="section follow"><h3 class="follow-h">Follow along</h3><p class="lead" style="margin:0 auto 22px">See what we're building in the world — and help share it. You're our most credible channel.</p><div class="socials big">${socialRow(26)}</div></div>`;}
+function hero(section,eyebrow,title,sub,desc){return `
+  <div class="phead"><span class="l"><span class="arw">↗</span> ${section}</span></div>
+  <div class="phero"><span class="peyebrow">${eyebrow}</span><h1 class="pdisplay">${title}</h1>
+  <div class="pfoot"><p class="psub">${sub}</p>${desc?`<p class="pdesc">${desc}</p>`:'<span></span>'}</div></div>`;}
+function card(n,title,desc,go,ic){return `<div class="card${go?' click':''}" ${go?`onclick="nav('${go}')"`:''}>${ic?`<span class="cic">${I(icons[ic]||icons.compass,17)}</span>`:''}<div class="n">${n}</div><h3>${title}</h3><p>${desc}</p>${go?`<div class="arw">${I(icons.arrow,16)}</div>`:''}</div>`;}
+function linkrow(t,s,fn,iconName){return `<div class="linkrow" onclick="${fn}">${iconName?`<span class="sicon">${I(icons[iconName]||icons.doc,17)}</span>`:''}<span><span class="lt">${t}</span>${s?`<br><span class="ls">${s}</span>`:''}</span><span class="ar">${I(icons.arrow,16)}</span></div>`;}
+function sysrow(s){return `<div class="linkrow" onclick="alert('Prototype: ${s[0]} guide')">${sysLogo(s[3])}<span><span class="lt">${s[0]}</span><br><span class="ls">${s[1]} · ${s[2]}</span></span><span class="ar">${I(icons.arrow,16)}</span></div>`;}
+function rec(r,kind){return `<article class="rec"><div style="flex:1;min-width:0"><div class="date">${fmt(r.date)}</div><h3>${r.title}</h3>${r.topic?`<p class="meta">${r.topic}</p>`:''}${r.subject?`<p class="meta">${r.subject}</p>`:''}</div><span class="watch" onclick="alert('Prototype: opens on ${kind}')">${kind==='Zoom'?'Watch':'Read'}</span></article>`;}
+
+/* ---------- pages ---------- */
+const PAGES={
+  home(){return hero('The Compass / Welcome','Start here','Welcome to Sand,<br>Adventurer!','We\'re really glad you\'re here.','Your home for finding your feet at Sand — the story behind us, how we work, and everything you need for a great first 90 days.')
+    + `<div class="section"><div class="slabel">↘ A welcome from Fred</div>${videoEmbed('jBpM6O5U_5I','A welcome from Fred — CEO, Sand')}<p class="prose" style="margin-top:12px;color:var(--muted)">A few minutes from our CEO — why Sand exists, and what to expect from your first days. When you're ready, pick up your journey below.</p></div>
+      <div class="section"><div class="slabel">↘ Find your way</div>
+        <div class="cards">
+          ${card('02','Your Journey','Land, launch and find your feet in your first 90 days.','journey','route')}
+          ${card('03','Our Story','Why Sand exists and where we\'re going.','story','book')}
+          ${card('04','Our Principles','How we lead, and how we work.','principles','culture')}
+        </div></div>
+      <div class="section"><div class="slabel">↘ Stuck on something?</div>
+        <p class="lead" style="margin-bottom:18px">Day one always has snags — that's normal. Here's who to grab:</p>
+        <div class="cards">
+          ${card('IT & ACCESS','Something won\'t log in?','Email itops@sandtech.com or post in #it-help on Slack — they\'re fast.','','bolt')}
+          ${card('PEOPLE OPS','Contracts, payroll, leave','peopleops@sandtech.com has you covered.','','doc')}
+          ${card('ANYTHING ELSE','Not sure who to ask?','Ask your manager or Culture Buddy — no question is too small.','','chat')}
+        </div></div>
+      <div class="section"><div class="slabel">↘ Catch up</div><div class="cards two">${card('WEEKLY T',WEEKLYT.title,WEEKLYT.subject,'','megaphone')}${card('TLD',TLD.title,TLD.topic,'','video')}</div></div>
+      ${followBlock()}`;
+  },
+  journey(){return hero('The Compass / Your Journey','Onboarding','Your journey<br>at Sand.','Informed, connected and empowered — from day one.','Track your onboarding, tick things off, and settle in at your own pace.')
+    + `<div class="section"><div class="slabel">↘ The journey — three phases</div>
+        <p class="lead" style="margin-bottom:18px">Onboarding at Sand isn't a single day — it's a guided three-phase journey over your first three months. Here's what each phase is for, and what "done" looks like.</p>
+        <div class="cards">
+          ${card('01 · Pre-Onboarding','Before you start','Between signing and day one, we send you everything to arrive confident: the story of Sand, our culture and principles, and access to the tools you\'ll use. Goal: walk in on day one already knowing who we are and what to expect.','','mail')}
+          ${card('02 · Orientation','Your first two weeks','This is about people and bearings, not output. You\'ll meet your manager and team, get a guided tour of our systems and policies, and join your first TLD (our all-hands). Goal: connected, set up, and clear on what\'s expected.','','users')}
+          ${card('03 · Integration','Weeks 3–12','Now you shift from learning to doing: your first real piece of work, deeper relationships, and the Live Experience — sessions where teams across Sand show how they work. Goal: confident, contributing, and at home.','','rocket')}
+        </div></div>
+      <div class="section"><div class="slabel">↘ Check-ins — the REX rhythm</div>
+        <p class="lead" style="margin-bottom:18px">We check in at 30, 60 and 90 days — a simple <b>Reality vs Expectations</b> chat. No surprises, just support.</p>
+        <div class="rex">${REX.map((r,i)=>card(r[0],r[1],r[2],'',['smile','target','flag'][i])).join('')}</div></div>
+      <div class="section"><div class="slabel">↘ Your soft-landing checklist</div>
+        ${CHECKLIST.map((g,gi)=>`<div style="margin-bottom:20px"><div class="slabel" style="margin-bottom:10px">${g.g}</div><div class="grid2">${g.items.map((it,ii)=>`<label class="check"><input type="checkbox" data-ck="ck-${gi}-${ii}" onchange="saveCk(this)"><span>${it}</span></label>`).join('')}</div></div>`).join('')}
+        <p class="prose" style="color:var(--muted);font-size:.88rem">Your ticks are saved on this device, so you can come back anytime.</p>
+        <p class="prose" style="color:var(--faint);font-family:var(--font-mono);font-size:.78rem">The Leadership Principles live in Our Principles · systems and rhythms are below.</p></div>
+      <div class="section"><div class="slabel">↘ Company rhythms</div><div class="cards">
+        ${card('MONDAY','CEO Update','A weekly note from Fred — progress, priorities, recognitions.','','mail')}
+        ${card('THURSDAY','The Weekly T','Staff newsletter — Pulse, Tech Insights, Impact Stories.','','megaphone')}
+        ${card('BI-WEEKLY','TLD','Thursday Late Discussion — org-wide all-hands, 5–6PM CAT (Central Africa Time) on Zoom.','','video')}
+      </div></div>
+      <div class="section"><div class="slabel">↘ Key systems</div>
+        <p class="lead" style="margin-bottom:18px">The tools you'll use every day. You'll get access to most of these before day one — if something's missing, email the contact listed and they'll sort it.</p>
+        <div class="grid2">${SYSTEMS.map(s=>sysrow(s)).join('')}</div></div>
+      <div class="section"><div class="slabel">↘ Key policies</div>
+        <p class="lead" style="margin-bottom:18px">Clear guidelines that keep things fair and transparent. The full documents live in <b>HiBob › Company Docs</b> — these are the four you'll actually reach for.</p>
+        <div class="grid2">${POLICIES.map(p=>linkrow(p[0],p[1],"alert('Prototype: opens in HiBob')",'doc')).join('')}</div></div>
+      <div class="section"><div class="slabel">↘ Essential reading</div>
+        <p class="lead" style="margin-bottom:18px">A short shelf that says more about how we think than any policy could — two pre-reads we ask every Adventurer to do, plus stories from our own people.</p>
+        <div class="grid2">${PREREADS.map(p=>linkrow(p[0],p[1]+' · pre-read',"alert('Prototype: opens the pre-read')",'book')).join('')}
+        ${BLOG.map(b=>linkrow(b[0],b[1]+' · '+b[2],"alert('Prototype: opens the post')",'doc')).join('')}
+        ${linkrow('More coming soon','A growing shelf — impact stories, tech writing, culture notes',"alert('Prototype: placeholder')",'star')}</div></div>
+      <div class="section"><div class="buddy"><div class="slabel" style="margin-bottom:12px">↘ Culture Buddy</div><h3>A friendly face for your first weeks.</h3><p>A <b>Culture Buddy</b> is a teammate — outside your reporting line — who helps you settle in. Someone to ask the "small" questions, learn the unwritten rules (which channels matter, how Friday works), and feel part of things fast. They check in through your first few weeks and point you to the right people.</p><p style="margin-top:10px;color:var(--muted)">Not paired yet? Request one and People Ops will match you with someone who fits.</p><button class="cta" style="margin-top:16px" onclick="alert('Prototype: requests a Culture Buddy from People Ops')">Request a Culture Buddy</button></div></div>`;
+  },
+  story(){return hero('The Compass / Our Story','Who we are','Why we<br>exist.','Two paths, one purpose.','Sand exists to help solve humanity\'s most critical challenges at scale — health, water, energy, telecom and cities.')
+    + `<div class="section"><div class="slabel">↘ Two Paths, One Purpose</div>
+        <div class="prose"><p class="lead"><b>Sand began with two people who turned obligation into opportunity.</b></p>
+        <p>Fred Swaniker and Shaun Dippnall came from different worlds but arrived at the same conviction: Africa's — and the world's — hardest problems wouldn't be solved by aid or advice, but by <b>talent</b>. So they built talent engines: institutions that found brilliant people and gave them a path to do meaningful work.</p>
+        <p>Those engines grew into something bigger. Partnerships formed, ambitions compounded, and eventually a split enabled scale — the talent mission and the technology mission each needed room to run. Out of that came <b>Sand Technologies</b>: a company built to apply AI where it matters most, across global industries like health, water, energy and telecom.</p>
+        <p>Every Adventurer who joins is part of that same arc — talent, given a hard problem worth solving.</p>
+        <p><a class="ink-cadet" style="cursor:pointer;font-weight:600" onclick="alert('Prototype: opens Our Story on Google Drive')">Read the full story, with all the chapters →</a></p></div></div>
+      <div class="section"><div class="slabel">↘ What we build</div>
+        <p class="lead">Our platform, <b>Symmetri</b>, is Physical AI for critical infrastructure — it senses, analyses and acts on the systems millions depend on. <span class="hl">Strategy</span> sets the direction; <span class="hl-c">execution</span> is how we make it real.</p>
+        <div class="cards" style="margin-top:20px">${AREAS.map(a=>card('',a[0],a[1],'',a[2])).join('')}</div>
+        <div style="margin-top:14px">${linkrow('See our case studies','sandtech.com — deployed in production',"window.open('https://www.sandtech.com/#cases','_blank','noopener')")}</div></div>
+      <div class="section"><div class="slabel">↘ The story of one decision</div>
+        <p class="lead" style="margin-bottom:18px">What it actually feels like on the ground — how one decision in our healthcare work rippled out to real patients. Worth ten minutes.</p>
+        <div class="vid" style="aspect-ratio:16/9;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;color:#9a9a97;cursor:pointer" onclick="alert('Prototype: plays The Story of One Decision (healthcare onboarding video)')">
+          ${I(icons.play,54)}<span class="mono" style="font-size:.78rem;letter-spacing:.1em">VIDEO · THE STORY OF ONE DECISION</span></div></div>
+      <div class="section"><div class="slabel">↘ Why we stay</div>
+        <div class="quote"><p>"The scale of what you\'re building matches the scale of what you care about."</p><span class="by">An Adventurer at Sand</span></div>
+        <div class="quote"><p>"I get to see my work in action — real outcomes, not just activity."</p><span class="by">An Adventurer at Sand</span></div></div>`;
+  },
+  principles(){return hero('The Compass / Our Principles','Everyone leads','How we<br>show up.','Not values — ways of being.','The thinking tools we use when there isn\'t a perfect answer. We believe everyone leads at Sand.')
+    + `<div class="section"><div class="prose"><p class="lead"><b>Sand is solving ambitious problems across industries, countries and teams.</b> Every day, hundreds of decisions are made without waiting for permission or perfect information. So how do we move fast <i>and</i> still move together? That\'s where our principles come in.</p></div></div>
+      <div class="section"><div class="slabel">↘ Why we need principles</div><div class="cards">${WHY.map(w=>card('',w[0],w[1],'',w[2])).join('')}</div></div>
+      <div class="section"><div class="slabel">↘ The 13 Leadership Principles</div>
+        <p class="lead" style="margin-bottom:30px">Not values — <b>ways of being</b>. The thinking tools we reach for when there isn't a perfect answer. We hold each other to all thirteen, and we take our time to explain them because they matter.</p>
+        <div class="pgrid">${PILLARS.map((p,i)=>`<div class="pitem"><div class="pi-top"><span class="idx">${String(i+1).padStart(2,'0')}</span><span class="pi-theme">${p[3]}</span></div><h3 class="pi-name">${p[0]}</h3><p class="pi-desc">${p[2]}</p></div>`).join('')}</div></div>
+      <div class="section"><div class="slabel">↘ Knowledge check</div>
+        <p class="lead" style="margin-bottom:18px">Which principle guides you? Tap an answer.</p>
+        ${QUIZ.map((q,qi)=>`<div class="quiz"><div class="qn">Question ${qi+1}</div><div class="q">${q[0]}</div>${q[1].map((o,oi)=>`<div class="opt" id="q${qi}o${oi}" onclick="answer(${qi},${oi},${q[2]})"><span class="ol">${String.fromCharCode(65+oi)}</span> ${o}</div>`).join('')}<div class="qexp" id="q${qi}exp">✓ ${q[3]}</div></div>`).join('')}
+        <div class="buddy" id="quizdone" style="display:none;margin-top:10px"></div></div>
+      <div class="section"><div class="slabel">↘ How we execute — the mindset</div>
+        <p class="lead" style="margin-bottom:18px">Principles guide the call; this is how the work actually gets done day to day. Five habits you'll see everywhere at Sand:</p>
+        <div class="cards">${MINDSET.map(m=>card('',m[0],m[1],'',m[2])).join('')}</div></div>
+      <div class="section"><div class="slabel">↘ How we execute — from strategy to outcomes</div>
+        <p class="lead" style="margin-bottom:18px">Everything connects: strategy becomes goals, goals become your work, your work becomes real-world outcomes. Here's the chain, bottom to top:</p>
+        <div class="ladder">${LADDER.map((l,i)=>`<div class="lstep"><div class="box">${l[0]}</div><div class="desc">${l[1]}</div></div>`).join('')}</div>
+        <p class="prose" style="margin-top:16px;color:var(--muted)">We set OKRs top-down and bottom-up — <b>Org → Function → Team → Individual</b> — so your goals ladder up to company priorities, and cadences keep us aligned week to week.</p></div>`;
+  }
+};
+PAGES.share=function(){return hero('The Compass / Spread the Word','You made it','Tell the<br>world.','You\'re one of us now — say it loud.','New adventures deserve announcing. Share the news, make it yours, and grab the kit that makes you look the part.')
+  + `<div class="section"><div class="slabel">↘ Share the news</div>
+      <p class="lead" style="margin-bottom:18px">A LinkedIn or Instagram post about joining is the warmest way to start — your network wants to celebrate you. Say it in your own words, and tag us so we can cheer along:</p>
+      <div class="cards two">
+        ${card('TAG US','@sandtechinc','LinkedIn · Instagram · X · YouTube','','megaphone')}
+        ${card('HASHTAGS','#BuildWhatMatters','#SandTechnologies · #NewAdventure','','chat')}
+      </div>
+      <button class="cta" style="margin-top:16px" onclick="navigator.clipboard&&navigator.clipboard.writeText('Thrilled to share that I\\'ve joined @sandtechinc — building what matters for the infrastructure millions depend on. #BuildWhatMatters #SandTechnologies #NewAdventure').then(()=>alert('Copied a starter caption to your clipboard — make it yours!'))">Copy a starter caption</button></div>
+    <div class="section"><div class="slabel">↘ Make it yours — the announcement card</div>
+      <p class="lead" style="margin-bottom:18px">Drop in a photo of yourself and we\'ll frame it in Sand\'s design — ready to download for your post or story. Your photo never leaves this page.</p>
+      <div class="cards two">
+        <div class="card">
+          <div class="n">1 · YOUR PHOTO</div>
+          <input type="file" accept="image/*" id="shot" style="margin:12px 0;display:block" onchange="loadShot(this)">
+          <div class="n" style="margin-top:8px">2 · YOUR DETAILS</div>
+          <input type="text" id="shotName" placeholder="Your name" value="" oninput="renderCard(CURFMT)" style="margin:10px 0 6px;display:block;width:100%;padding:10px 12px;border:1px solid var(--border-2);border-radius:4px;background:var(--surface-2);color:var(--text);font:inherit">
+          <input type="text" id="shotRole" placeholder="Your role (e.g. Talent Experience Specialist)" oninput="renderCard(CURFMT)" style="margin:0 0 10px;display:block;width:100%;padding:10px 12px;border:1px solid var(--border-2);border-radius:4px;background:var(--surface-2);color:var(--text);font:inherit">
+          <div class="n" style="margin-top:8px">3 · FORMAT</div>
+          <div style="display:flex;gap:8px;margin:10px 0;flex-wrap:wrap">
+            <button class="cta" style="padding:9px 14px" onclick="renderCard('square')">Square 1:1</button>
+            <button class="cta" style="padding:9px 14px" onclick="renderCard('post')">Post 4:5</button>
+            <button class="cta" style="padding:9px 14px" onclick="renderCard('story')">Story 9:16</button>
+          </div>
+          <div class="n" style="margin-top:8px">4 · DOWNLOAD</div>
+          <button class="cta" style="margin-top:10px;background:var(--squash);color:#0d0d0d" onclick="downloadCard()">Download image</button>
+        </div>
+        <div class="card" style="display:flex;align-items:center;justify-content:center;background:var(--surface-2)">
+          <canvas id="cardCanvas" style="max-width:100%;max-height:420px;border:1px solid var(--border);border-radius:4px"></canvas>
+        </div>
+      </div></div>
+    <div class="section"><div class="slabel">↘ Your kit</div>
+      <p class="lead" style="margin-bottom:18px">Look the part everywhere you show up:</p>
+      <div class="grid2">
+        ${linkrow('Zoom backgrounds','Branded virtual backgrounds for calls',"alert('Prototype: downloads the Zoom background pack')",'video')}
+        ${linkrow('LinkedIn banner','Profile header in the Sand design',"alert('Prototype: downloads the LinkedIn banner')",'doc')}
+        ${linkrow('Email signature','Copy-paste signature template',"alert('Prototype: opens the signature template')",'mail')}
+        ${linkrow('Sand wallpapers','Desktop & phone',"alert('Prototype: downloads wallpapers')",'compass')}
+      </div></div>
+    <div class="section follow"><h3 class="follow-h">Welcome aboard, Adventurer.</h3><p class="lead" style="margin:0 auto 22px">That\'s The Compass — come back any time you need your bearings. Follow along and share what we\'re building:</p><div class="socials big">${socialRow(26)}</div>
+    <p style="margin-top:26px"><a class="ink-cadet" style="cursor:pointer;font-family:var(--font-mono);font-size:.78rem" onclick="alert('Prototype: opens a short feedback form to People/Talent Experience')">Something missing or confusing on this site? Tell us — we act on it.</a></p></div>`;};
+/* ---------- announcement card generator ---------- */
+let SHOT=null,CURFMT='square';
+function loadShot(inp){const f=inp.files&&inp.files[0];if(!f)return;const r=new FileReader();r.onload=e=>{const im=new Image();im.onload=()=>{SHOT=im;renderCard(CURFMT);};im.src=e.target.result;};r.readAsDataURL(f);}
+const FMTS={square:[1080,1080],post:[1080,1350],story:[1080,1920]};
+/* Draw the SAND wordmark natively (S + triangle-A + ND) so downloads never break. */
+function drawSand(x,cx,cy,h,color){
+  x.save();x.fillStyle=color;x.strokeStyle=color;x.textBaseline='alphabetic';
+  x.font=`800 ${h}px "Inter Tight",sans-serif`;
+  const sW=x.measureText('S').width,gap=h*0.10,triW=h*0.82,ndW=x.measureText('ND').width;
+  const total=sW+gap+triW+gap+ndW;let px=cx-total/2;const base=cy+h*0.36;
+  x.fillText('S',px,base);px+=sW+gap;
+  x.lineWidth=Math.max(3,h*0.085);x.lineJoin='round';
+  x.beginPath();x.moveTo(px+triW/2,base-h*0.72);x.lineTo(px+triW,base);x.lineTo(px,base);x.closePath();x.stroke();
+  px+=triW+gap;x.fillText('ND',px,base);x.restore();}
+function renderCard(fmt){CURFMT=fmt;const [W,H]=FMTS[fmt];const c=el('cardCanvas');if(!c)return;c.width=W;c.height=H;const x=c.getContext('2d');
+  const name=(el('shotName')&&el('shotName').value.trim())||'Your Name';
+  const role=(el('shotRole')&&el('shotRole').value.trim())||'Adventurer at Sand';
+  /* dark card, site design */
+  x.fillStyle='#0b0b0b';x.fillRect(0,0,W,H);
+  const m=Math.round(W*0.07);
+  x.strokeStyle='#2a2a2a';x.lineWidth=2;x.strokeRect(m*0.6,m*0.6,W-1.2*m,H-1.2*m);
+  x.fillStyle='#9a9a97';x.font=`700 ${Math.round(W*0.024)}px "IBM Plex Mono",monospace`;x.textBaseline='top';x.textAlign='left';
+  x.fillText('↗ THE COMPASS / DAY 01',m,m*0.95);
+  /* rectangular photo, site-style frame */
+  const py=m*1.9,px=m,pw=W-2*m;
+  const nameBand=Math.round(H*(fmt==='story'?0.22:0.28));
+  const ph=H-py-nameBand-m*1.9;
+  x.save();x.beginPath();x.rect(px,py,pw,ph);x.clip();
+  if(SHOT){const s=Math.max(pw/SHOT.width,ph/SHOT.height);const sw=SHOT.width*s,sh=SHOT.height*s;x.drawImage(SHOT,px+(pw-sw)/2,py+(ph-sh)/2,sw,sh);}
+  else{x.fillStyle='#1c1c1c';x.fillRect(px,py,pw,ph);x.fillStyle='#63635f';x.font=`500 ${Math.round(W*0.032)}px "Inter Tight",sans-serif`;x.textAlign='center';x.textBaseline='middle';x.fillText('your photo here',W/2,py+ph/2);}
+  x.restore();
+  x.strokeStyle='#2a2a2a';x.lineWidth=2;x.strokeRect(px,py,pw,ph);
+  /* squash accent + name block */
+  let ty=py+ph+Math.round(H*0.035);x.textAlign='left';x.textBaseline='top';
+  x.fillStyle='#f1ae0a';x.fillRect(m,ty,Math.round(W*0.085),5);ty+=Math.round(W*0.035);
+  x.fillStyle='#f5f5f3';x.font=`800 ${Math.round(W*0.062)}px "Inter Tight",sans-serif`;
+  x.fillText(name,m,ty);ty+=Math.round(W*0.078);
+  x.fillStyle='#9a9a97';x.font=`500 ${Math.round(W*0.03)}px "IBM Plex Mono",monospace`;
+  x.fillText(role,m,ty);
+  /* footer: wordmark + tagline */
+  const fy=H-m*1.55;
+  drawSand(x,W/2,fy-Math.round(W*0.045),Math.round(W*0.05),'#f5f5f3');
+  x.fillStyle='#f1ae0a';x.font=`700 ${Math.round(W*0.021)}px "IBM Plex Mono",monospace`;x.textAlign='center';
+  x.fillText('CRITICAL SYSTEMS. INTELLIGENT OUTCOMES.',W/2,fy+Math.round(W*0.012));x.textAlign='left';}
+function downloadCard(){const c=el('cardCanvas');if(!c||!c.width){alert('Pick a format first!');return;}const a=document.createElement('a');a.download='i-just-joined-sand-'+CURFMT+'.png';a.href=c.toDataURL('image/png');a.click();}
+function lpPage(i){const p=PILLARS[i];return hero('The Compass / Our Principles','Principle '+String(i+1).padStart(2,'0')+' · Theme: '+p[3],p[0]+'.',p[1],p[2])
+  + `<div class="section"><span class="back" onclick="nav('principles')" style="font-family:var(--font-mono);font-size:.74rem;color:var(--cadet);cursor:pointer">← All 13 principles</span>
+     <p class="lead" style="margin-top:16px">One of Sand\'s 13 Leadership Principles — a way of being, not a value. It\'s a thinking tool for when there isn\'t a perfect answer.</p></div>`;}
+
+/* ---------- quiz ---------- */
+let QUIZSCORE={};
+function answer(qi,oi,correct){
+  const chosen=el('q'+qi+'o'+oi);
+  document.querySelectorAll('#q'+qi+'o0,#q'+qi+'o1,#q'+qi+'o2,#q'+qi+'o3').forEach(o=>o.classList.remove('correct','wrong'));
+  el('q'+qi+'o'+correct).classList.add('correct');
+  if(oi!==correct)chosen.classList.add('wrong');
+  el('q'+qi+'exp').classList.add('show');
+  if(!(qi in QUIZSCORE))QUIZSCORE[qi]=(oi===correct);
+  const done=Object.keys(QUIZSCORE).length,right=Object.values(QUIZSCORE).filter(Boolean).length;
+  const d=el('quizdone');
+  if(d&&done>=QUIZ.length){d.style.display='block';d.innerHTML=`<h3 style="margin-bottom:6px">${right===QUIZ.length?'🎉 '+right+'/'+QUIZ.length+' — you\'re thinking like an Adventurer.':right+'/'+QUIZ.length+' on first try — nice. The principles grid above has the full wording.'}</h3><p style="color:var(--muted);margin:0">These aren't trick questions — they're the everyday calls you'll make here.</p>`;}
+}
+function saveCk(cb){try{localStorage.setItem(cb.dataset.ck,cb.checked?'1':'')}catch(e){}}
+function restoreCk(){try{view().querySelectorAll('[data-ck]').forEach(cb=>{cb.checked=!!localStorage.getItem(cb.dataset.ck)})}catch(e){}}
+
+/* ---------- routing ---------- */
+const CRUMB={home:'Welcome',journey:'Your Journey',story:'Our Story',principles:'Our Principles',share:'Spread the Word'};
+const JOURNEY=['home','journey','story','principles','share'];
+const NB={journey:'Your first 90 days',story:'Why we exist',principles:'How we lead & work',share:'Tell the world — and grab your kit'};
+function nextFooter(id){const i=JOURNEY.indexOf(id);if(i<0||i>=JOURNEY.length-1)return '';const n=JOURNEY[i+1];return `<div class="nextbar" onclick="nav('${n}')"><span class="nl">Next</span><span class="nt">${CRUMB[n]} ${I(icons.arrow,20)}</span><span class="ls" style="color:var(--muted)">${NB[n]}</span></div>`;}
+function nav(id){
+  window.scrollTo(0,0);
+  const base=id.startsWith('lp')?'principles':id;
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.toggle('active',n.dataset.id===base));
+  if(id.startsWith('lp:')){view().innerHTML=lpPage(+id.split(':')[1]);observeReveal();return;}
+  view().innerHTML=(PAGES[id]||PAGES.home)()+nextFooter(id);
+  restoreCk();
+  if(id==='share')renderCard(CURFMT);
+  observeReveal();
+}
+function observeReveal(){
+  const els=view().querySelectorAll('.section');
+  els.forEach(e=>e.classList.add('reveal'));
+  const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}}),{threshold:.06,rootMargin:'0px 0px -40px 0px'});
+  els.forEach(e=>io.observe(e));
+}
+function renderNav(){el('nav').innerHTML=NAV.map(n=>`<div class="nav-item" data-id="${n.id}" onclick="nav('${n.id}')"><span class="num">${n.n}</span><span><span class="ni-l">${n.label}</span><span class="ni-s">${n.sub}</span></span></div>`).join('');}
+
+/* ---------- theme / auth ---------- */
+let THEME='light';
+function toggleTheme(){THEME=THEME==='light'?'dark':'light';document.documentElement.setAttribute('data-theme',THEME);el('themeBtn').innerHTML=I(THEME==='light'?icons.moon:icons.sun,16);}
+function enterSite(){el('login').style.display='none';el('app').style.display='grid';renderNav();nav('home');}
+
+/* ---------- init ---------- */
+el('gicon').innerHTML=googleG;
+el('themeBtn').innerHTML=I(icons.moon,16);
+el('footSocial').innerHTML=socialRow();
+</script>
+</body>
+</html>
