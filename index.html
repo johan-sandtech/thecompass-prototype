@@ -483,29 +483,32 @@ function renderCard(fmt){CURFMT=fmt;const [W,H]=FMTS[fmt];const c=el('cardCanvas
   x.fillStyle='#0b0b0b';x.fillRect(0,0,W,H);
   const m=Math.round(W*0.07);
   x.strokeStyle='#2a2a2a';x.lineWidth=2;x.strokeRect(m*0.6,m*0.6,W-1.2*m,H-1.2*m);
-  x.fillStyle='#9a9a97';x.font=`700 ${Math.round(W*0.024)}px "IBM Plex Mono",monospace`;x.textBaseline='top';x.textAlign='left';
-  x.fillText('↗ THE COMPASS / DAY 01',m,m*0.95);
+  /* header: SAND top-left, tagline top-right */
+  const headY=m*1.05;
+  drawSand(x,m+Math.round(W*0.075),headY+Math.round(W*0.02),Math.round(W*0.042),'#f5f5f3');
+  x.fillStyle='#f1ae0a';x.font=`700 ${Math.round(W*0.0195)}px "IBM Plex Mono",monospace`;x.textBaseline='top';x.textAlign='right';
+  x.fillText('CRITICAL SYSTEMS.',W-m,headY);
+  x.fillText('INTELLIGENT OUTCOMES.',W-m,headY+Math.round(W*0.032));
+  x.textAlign='left';
   /* rectangular photo, site-style frame */
-  const py=m*1.9,px=m,pw=W-2*m;
-  const nameBand=Math.round(H*(fmt==='story'?0.22:0.28));
-  const ph=H-py-nameBand-m*1.9;
+  const py=m*2.15,px=m,pw=W-2*m;
+  const nameBand=Math.round(H*(fmt==='story'?0.20:0.26));
+  const ph=H-py-nameBand-m*0.9;
   x.save();x.beginPath();x.rect(px,py,pw,ph);x.clip();
   if(SHOT){const s=Math.max(pw/SHOT.width,ph/SHOT.height);const sw=SHOT.width*s,sh=SHOT.height*s;x.drawImage(SHOT,px+(pw-sw)/2,py+(ph-sh)/2,sw,sh);}
   else{x.fillStyle='#1c1c1c';x.fillRect(px,py,pw,ph);x.fillStyle='#63635f';x.font=`500 ${Math.round(W*0.032)}px "Inter Tight",sans-serif`;x.textAlign='center';x.textBaseline='middle';x.fillText('your photo here',W/2,py+ph/2);}
   x.restore();
   x.strokeStyle='#2a2a2a';x.lineWidth=2;x.strokeRect(px,py,pw,ph);
-  /* squash accent + name block */
-  let ty=py+ph+Math.round(H*0.035);x.textAlign='left';x.textBaseline='top';
-  x.fillStyle='#f1ae0a';x.fillRect(m,ty,Math.round(W*0.085),5);ty+=Math.round(W*0.035);
-  x.fillStyle='#f5f5f3';x.font=`800 ${Math.round(W*0.062)}px "Inter Tight",sans-serif`;
-  x.fillText(name,m,ty);ty+=Math.round(W*0.078);
-  x.fillStyle='#9a9a97';x.font=`500 ${Math.round(W*0.03)}px "IBM Plex Mono",monospace`;
-  x.fillText(role,m,ty);
-  /* footer: wordmark + tagline */
-  const fy=H-m*1.55;
-  drawSand(x,W/2,fy-Math.round(W*0.045),Math.round(W*0.05),'#f5f5f3');
-  x.fillStyle='#f1ae0a';x.font=`700 ${Math.round(W*0.021)}px "IBM Plex Mono",monospace`;x.textAlign='center';
-  x.fillText('CRITICAL SYSTEMS. INTELLIGENT OUTCOMES.',W/2,fy+Math.round(W*0.012));x.textAlign='left';}
+  /* bottom: squash accent + name + role (own space) */
+  let ty=py+ph+Math.round(H*0.032);x.textAlign='left';x.textBaseline='top';
+  x.fillStyle='#f1ae0a';x.fillRect(m,ty,Math.round(W*0.085),5);ty+=Math.round(W*0.034);
+  x.fillStyle='#f5f5f3';x.font=`800 ${Math.round(W*0.065)}px "Inter Tight",sans-serif`;
+  x.fillText(name,m,ty);
+  x.fillStyle='#9a9a97';x.font=`500 ${Math.round(W*0.029)}px "IBM Plex Mono",monospace`;
+  x.fillText(role,m,ty+Math.round(W*0.082));
+  /* small day marker bottom-right */
+  x.fillStyle='#63635f';x.font=`700 ${Math.round(W*0.02)}px "IBM Plex Mono",monospace`;x.textAlign='right';
+  x.fillText('↗ DAY 01',W-m,ty+Math.round(W*0.086));x.textAlign='left';}
 function downloadCard(){const c=el('cardCanvas');if(!c||!c.width){alert('Pick a format first!');return;}const a=document.createElement('a');a.download='i-just-joined-sand-'+CURFMT+'.png';a.href=c.toDataURL('image/png');a.click();}
 function lpPage(i){const p=PILLARS[i];return hero('The Compass / Our Principles','Principle '+String(i+1).padStart(2,'0')+' · Theme: '+p[3],p[0]+'.',p[1],p[2])
   + `<div class="section"><span class="back" onclick="nav('principles')" style="font-family:var(--font-mono);font-size:.74rem;color:var(--cadet);cursor:pointer">← All 13 principles</span>
