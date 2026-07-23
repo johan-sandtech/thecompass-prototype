@@ -465,50 +465,45 @@ PAGES.share=function(){return hero('The Compass / Spread the Word','You made it'
 /* ---------- announcement card generator ---------- */
 let SHOT=null,CURFMT='square';
 function loadShot(inp){const f=inp.files&&inp.files[0];if(!f)return;const r=new FileReader();r.onload=e=>{const im=new Image();im.onload=()=>{SHOT=im;renderCard(CURFMT);};im.src=e.target.result;};r.readAsDataURL(f);}
+/* Layout per format, matched to the Figma file (Card / Square, Post, Story). */
 const FMTS={square:[1080,1080],post:[1080,1350],story:[1080,1920]};
-/* Draw the SAND wordmark natively (S + triangle-A + ND) so downloads never break. */
-function drawSand(x,cx,cy,h,color){
-  x.save();x.fillStyle=color;x.strokeStyle=color;x.textBaseline='alphabetic';
-  x.font=`800 ${h}px "Inter Tight",sans-serif`;
-  const sW=x.measureText('S').width,gap=h*0.10,triW=h*0.82,ndW=x.measureText('ND').width;
-  const total=sW+gap+triW+gap+ndW;let px=cx-total/2;const base=cy+h*0.36;
-  x.fillText('S',px,base);px+=sW+gap;
-  x.lineWidth=Math.max(3,h*0.085);x.lineJoin='round';
-  x.beginPath();x.moveTo(px+triW/2,base-h*0.72);x.lineTo(px+triW,base);x.lineTo(px,base);x.closePath();x.stroke();
-  px+=triW+gap;x.fillText('ND',px,base);x.restore();}
-function renderCard(fmt){CURFMT=fmt;const [W,H]=FMTS[fmt];const c=el('cardCanvas');if(!c)return;c.width=W;c.height=H;const x=c.getContext('2d');
+const CARD_LAYOUT={square:{logoY:27,photoY:109,photoH:780},post:{logoY:50,photoY:132,photoH:1004},story:{logoY:102,photoY:184,photoH:1466}};
+/* Draw the SAND wordmark natively (S + filled triangle-A + ND) so downloads never break.
+   Swap for the official logo asset via data-URI when the brand pack lands. */
+function drawSand(x,leftX,topY,boxH,color){
+  x.save();x.fillStyle=color;x.textBaseline='alphabetic';
+  const h=boxH*0.66;const base=topY+boxH*0.78;
+  x.font=`800 ${h}px "Inter Tight","Inter",sans-serif`;
+  let px=leftX;
+  x.fillText('S',px,base);px+=x.measureText('S').width+h*0.10;
+  const triW=h*0.88;
+  x.beginPath();x.moveTo(px+triW/2,base-h*0.74);x.lineTo(px+triW,base);x.lineTo(px,base);x.closePath();x.fill();
+  px+=triW+h*0.10;x.fillText('ND',px,base);x.restore();}
+function renderCard(fmt){CURFMT=fmt;const [W,H]=FMTS[fmt];const L=CARD_LAYOUT[fmt];const c=el('cardCanvas');if(!c)return;c.width=W;c.height=H;const x=c.getContext('2d');
   const name=(el('shotName')&&el('shotName').value.trim())||'Your Name';
-  const role=(el('shotRole')&&el('shotRole').value.trim())||'Adventurer at Sand';
-  /* dark card, site design */
+  const role=((el('shotRole')&&el('shotRole').value.trim())||'Adventurer at Sand').toUpperCase();
   x.fillStyle='#0b0b0b';x.fillRect(0,0,W,H);
-  const m=Math.round(W*0.07);
-  x.strokeStyle='#2a2a2a';x.lineWidth=2;x.strokeRect(m*0.6,m*0.6,W-1.2*m,H-1.2*m);
-  /* header: SAND top-left, tagline top-right */
-  const headY=m*1.05;
-  drawSand(x,m+Math.round(W*0.075),headY+Math.round(W*0.02),Math.round(W*0.042),'#f5f5f3');
-  x.fillStyle='#f1ae0a';x.font=`700 ${Math.round(W*0.0195)}px "IBM Plex Mono",monospace`;x.textBaseline='top';x.textAlign='right';
-  x.fillText('CRITICAL SYSTEMS.',W-m,headY);
-  x.fillText('INTELLIGENT OUTCOMES.',W-m,headY+Math.round(W*0.032));
+  const m=44;
+  /* header: SAND logo top-left, tagline top-right (Figma: single line, white) */
+  drawSand(x,45,L.logoY,74,'#ffffff');
+  x.fillStyle='#ffffff';x.font=`500 21px "IBM Plex Mono",monospace`;x.textBaseline='alphabetic';x.textAlign='right';
+  x.fillText('CRITICAL SYSTEMS. INTELLIGENT OUTCOMES.',W-45,L.logoY+52);
   x.textAlign='left';
-  /* rectangular photo, site-style frame */
-  const py=m*2.15,px=m,pw=W-2*m;
-  const nameBand=Math.round(H*(fmt==='story'?0.20:0.26));
-  const ph=H-py-nameBand-m*0.9;
-  x.save();x.beginPath();x.rect(px,py,pw,ph);x.clip();
-  if(SHOT){const s=Math.max(pw/SHOT.width,ph/SHOT.height);const sw=SHOT.width*s,sh=SHOT.height*s;x.drawImage(SHOT,px+(pw-sw)/2,py+(ph-sh)/2,sw,sh);}
-  else{x.fillStyle='#1c1c1c';x.fillRect(px,py,pw,ph);x.fillStyle='#63635f';x.font=`500 ${Math.round(W*0.032)}px "Inter Tight",sans-serif`;x.textAlign='center';x.textBaseline='middle';x.fillText('your photo here',W/2,py+ph/2);}
+  /* photo: white 1px border, full width */
+  const py=L.photoY,pw=W-2*m,ph=L.photoH;
+  x.save();x.beginPath();x.rect(m,py,pw,ph);x.clip();
+  if(SHOT){const s=Math.max(pw/SHOT.width,ph/SHOT.height);const sw=SHOT.width*s,sh=SHOT.height*s;x.drawImage(SHOT,m+(pw-sw)/2,py+(ph-sh)/2,sw,sh);}
+  else{x.fillStyle='#1c1c1c';x.fillRect(m,py,pw,ph);x.fillStyle='#63635f';x.font=`500 34px "Inter Tight","Inter",sans-serif`;x.textAlign='center';x.textBaseline='middle';x.fillText('your photo here',W/2,py+ph/2);}
   x.restore();
-  x.strokeStyle='#2a2a2a';x.lineWidth=2;x.strokeRect(px,py,pw,ph);
-  /* bottom: squash accent + name + role (own space) */
-  let ty=py+ph+Math.round(H*0.032);x.textAlign='left';x.textBaseline='top';
-  x.fillStyle='#f1ae0a';x.fillRect(m,ty,Math.round(W*0.085),5);ty+=Math.round(W*0.034);
-  x.fillStyle='#f5f5f3';x.font=`800 ${Math.round(W*0.065)}px "Inter Tight",sans-serif`;
-  x.fillText(name,m,ty);
-  x.fillStyle='#9a9a97';x.font=`500 ${Math.round(W*0.029)}px "IBM Plex Mono",monospace`;
-  x.fillText(role,m,ty+Math.round(W*0.082));
-  /* small day marker bottom-right */
-  x.fillStyle='#63635f';x.font=`700 ${Math.round(W*0.02)}px "IBM Plex Mono",monospace`;x.textAlign='right';
-  x.fillText('↗ DAY 01',W-m,ty+Math.round(W*0.086));x.textAlign='left';}
+  x.strokeStyle='#ffffff';x.lineWidth=1;x.strokeRect(m+0.5,py+0.5,pw-1,ph-1);
+  /* bottom stack: coral label, name, cadet role */
+  const labelY=py+ph+22;x.textAlign='left';x.textBaseline='top';
+  x.fillStyle='#f24f3a';x.font=`700 22px "IBM Plex Mono",monospace`;
+  x.fillText('↗ NEW ADVENTURER',m,labelY);
+  x.fillStyle='#f5f5f3';x.font=`800 62px "Inter Tight","Inter",sans-serif`;
+  x.fillText(name,m,labelY+28);
+  x.fillStyle='#80a2b4';x.font=`500 30px "IBM Plex Mono",monospace`;
+  x.fillText(role,m,labelY+102);}
 function downloadCard(){const c=el('cardCanvas');if(!c||!c.width){alert('Pick a format first!');return;}const a=document.createElement('a');a.download='i-just-joined-sand-'+CURFMT+'.png';a.href=c.toDataURL('image/png');a.click();}
 function lpPage(i){const p=PILLARS[i];return hero('The Compass / Our Principles','Principle '+String(i+1).padStart(2,'0')+' · Theme: '+p[3],p[0]+'.',p[1],p[2])
   + `<div class="section"><span class="back" onclick="nav('principles')" style="font-family:var(--font-mono);font-size:.74rem;color:var(--cadet);cursor:pointer">← All 13 principles</span>
